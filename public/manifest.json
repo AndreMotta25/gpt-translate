@@ -1,0 +1,16 @@
+{
+    "manifest_version": 3,
+    "name": "Translate-GPT",
+    "version": "1.0",
+    "description": "Translate web page content with chatGPT",
+    "content_scripts": [ 
+      { 
+        "js": ["assets/script.js"],
+        "css":["styles/style.css"], 
+        "matches": [ 
+          "https://*/*" 
+        ] 
+      } 
+    ],
+    "permissions": ["activeTab","scripting"]
+  }

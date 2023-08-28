@@ -1,0 +1,25 @@
+.gpt-translate-1542 {
+    border: none;
+    font-size: 1.3rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    position: absolute;
+    cursor: pointer;
+}
+
+.gpt-translate-1542:hover { 
+    filter: contrast(0.4)
+}
+
+.spinner-gpt {
+    animation: spinner infinite 0.5s;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
