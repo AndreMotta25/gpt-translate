@@ -5,8 +5,18 @@ import {resolve} from 'path'
 export default defineConfig({
     build: {
         rollupOptions:{
+            input:{
+                index: resolve(__dirname, 'index.html'),
+                popup:resolve(__dirname, 'src/popup.ts'),
+                script: resolve(__dirname, 'src/index.ts'),
+            },
             output: {
-                entryFileNames:"assets/script.js"
+                assetFileNames: assetInfo => {
+                    const [name, type] = assetInfo.name.split('.')
+                    if(type === 'css') return `styles/popup[extname]`
+                    return "[name][extname]"
+                },
+                entryFileNames:"assets/[name].js"
             },
         }
     },
@@ -18,8 +28,9 @@ export default defineConfig({
         viteStaticCopy({
             targets:[
                 {
-                    src:normalizePath("./src/styles/style.css"), dest: normalizePath('./styles/'),
+                    src:normalizePath("./src/styles/style.css"), dest: normalizePath('./styles/'),   
                 }
+                
             ]
         })
     ]
