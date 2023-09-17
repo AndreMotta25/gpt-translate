@@ -39,16 +39,21 @@ class Translator {
             const {pageX,pageY} = event; 
             
             this.activeElement = window.getSelection()?.anchorNode?.parentElement as HTMLElement;
-            
-            console.log(window.getSelection())
 
-            
+            let lengthEndContainer: number;
+            let startSelection: number;
+            let endSelection: number;
+
             for(let i=0; i < (selection.rangeCount as number); i++ ) {
                 const range = selection.getRangeAt(i) 
                 console.log(range);
 
                 const fragment = selection.getRangeAt(i).cloneContents();
-                console.log(fragment)
+
+                startSelection = range.startOffset;
+                endSelection = range.endOffset;
+
+                lengthEndContainer = range.endContainer.textContent?.length as number
 
                 if(range.commonAncestorContainer.nodeType === Node.TEXT_NODE) { // quando um texto unico é selecionado(não tem tags)
                     this.parent = selection.anchorNode?.parentElement as HTMLElement;
@@ -71,12 +76,11 @@ class Translator {
                     this.type = 3;
                 }
 
-                console.log(this.htmlToText(fragment.childNodes))
-                this.content = this.htmlToText(fragment.childNodes)   
-                console.log(this)
+                this.content = this.htmlToText(fragment.childNodes);
+                   
             }
-
-            if(this.activeElement instanceof HTMLElement) 
+            //  @ts-ignore
+            if(this.activeElement instanceof HTMLElement && startSelection === 0 && endSelection === lengthEndContainer) 
             {   
                 this.button.create({x:pageX+10, y:pageY+10})          
             }
@@ -98,8 +102,6 @@ class Translator {
             organization: organization
         },)).data
         
-        console.log(text);
-        
         if(this.activeElement && (this.type === 3 || this.type === 1)) {
             const nodeClone = this.parent?.cloneNode() as HTMLElement;
 
@@ -119,9 +121,6 @@ class Translator {
             
             const {button,id} = this.createButton();
 
-            console.log(newHtmlElements)
-            console.log(this.selectedTags)
-
             this.selectedTags.forEach((tag,index) => {
                 tag.classList.add('hide');
                 tag.insertAdjacentElement('afterend',newHtmlElements[index])
@@ -137,11 +136,8 @@ class Translator {
             console.error("Elemento não achado");
         }
 
-        console.log("Response:")
-        // console.log(response)
+        console.log("Traduziu!")
     }
-
-    // hideElements() {}
 
     createButton():{id: string, button: HTMLButtonElement} {
         const idButton = v4()
@@ -217,9 +213,3 @@ class Translator {
     }
 }
 export {Translator}
-
-/*
-    * pegar o pai do elemento. => commonAncestorContainer do range
-    * descobrir quais são os elementos anterior e proximo. => nextElementSibling | previousElementSibling
-
-*/ 
