@@ -1,44 +1,32 @@
 import {Icon} from './Icon.ts'
-import { getSelectedText } from "../utils/getText.ts";
 import axios from 'axios'
-import {v4} from 'uuid'
+import { TextSelector } from './Shared/TextSelector.ts';
+import { CommomText } from './CommomText.ts';
+import { GroupTags } from './GroupTags.ts';
+import { SomeTags } from './SomeTags.ts';
 
-interface IHideElement {
-    previus: HTMLElement[];
-    actual: HTMLElement[];
-    id: string;
-}
+
 class Translator {
-    activeElement:Element | null; 
     content: string;
     button;
-    actives: Element[];
     mouseDown =  false;
-    parent: Element | null;
-    selectedTags: Element[];
-    previus: Element | null;
     type: number;
-    hideElements: IHideElement[]
+    strategy: TextSelector;
 
     constructor() {
         this.button = new Icon();
-        this.actives = []        
-        this.hideElements = [];
-        this.selectedTags = [];
     }
 
     async selectText(event:MouseEvent) {
         
         const selection = window.getSelection();
-        if(this.mouseDown && window.getSelection()?.toString() !== '' && selection) {
-            this.previus = null;
-            this.parent = null
+        if(this.mouseDown && selection?.toString() !== '' && selection) {
             this.mouseDown = false;
-            this.content = getSelectedText();
+            this.content = selection.toString()
 
             const {pageX,pageY} = event; 
             
-            this.activeElement = window.getSelection()?.anchorNode?.parentElement as HTMLElement;
+            const existsElement = window.getSelection()?.anchorNode?.parentElement as HTMLElement;
 
             let lengthEndContainer: number;
             let startSelection: number;
@@ -46,7 +34,6 @@ class Translator {
 
             for(let i=0; i < (selection.rangeCount as number); i++ ) {
                 const range = selection.getRangeAt(i) 
-                console.log(range);
 
                 const fragment = selection.getRangeAt(i).cloneContents();
 
@@ -56,31 +43,19 @@ class Translator {
                 lengthEndContainer = range.endContainer.textContent?.length as number
 
                 if(range.commonAncestorContainer.nodeType === Node.TEXT_NODE) { // quando um texto unico é selecionado(não tem tags)
-                    this.parent = selection.anchorNode?.parentElement as HTMLElement;
-                    this.previus = this.activeElement.previousElementSibling as Element;
-                    this.type = 1;
+                    this.strategy =  new CommomText(selection);
                 }
                 else if(range.endContainer.parentElement !== range.commonAncestorContainer && range.startContainer.parentElement !== range.commonAncestorContainer ) { // um grupo de tags
-                    this.parent = range.commonAncestorContainer as Element; 
-                    this.previus = range.startContainer?.parentElement?.previousElementSibling as Element
-                    this.type = 2;
-                    
-                    for(let element of fragment.childNodes) {
-                        const allElements = Array.from(this.parent?.querySelectorAll("*"));
-                        this.selectedTags.push(...allElements.filter(ele => element.textContent === ele.textContent))
-                    }
+                    this.strategy = new GroupTags(range);
                 }
                 else { // quando um texto tem tags dentro
-                    this.parent = range.commonAncestorContainer as Element; 
-                    this.previus = this.activeElement.previousElementSibling as Element;
-                    this.type = 3;
+                    this.strategy = new SomeTags(selection);
                 }
-
                 this.content = this.htmlToText(fragment.childNodes);
                    
             }
             //  @ts-ignore
-            if(this.activeElement instanceof HTMLElement && startSelection === 0 && endSelection === lengthEndContainer) 
+            if(existsElement instanceof HTMLElement && startSelection === 0 && endSelection === lengthEndContainer) 
             {   
                 this.button.create({x:pageX+10, y:pageY+10})          
             }
@@ -102,65 +77,9 @@ class Translator {
             organization: organization
         },)).data
         
-        if(this.activeElement && (this.type === 3 || this.type === 1)) {
-            const nodeClone = this.parent?.cloneNode() as HTMLElement;
-
-            const {button,id} = this.createButton();
-
-            nodeClone.innerHTML = `${response.message}`;
-            nodeClone.appendChild(button);
-            
-            this.parent?.classList.add('hide')
-            
-            this.parent?.insertAdjacentElement('afterend', nodeClone)
-            this.hideElements.push({previus: [this.parent as HTMLElement], id: id, actual:[nodeClone]})
-        }
-        else if(this.type === 2) {
-            const parser = new DOMParser();
-            const newHtmlElements = Array.from(parser.parseFromString(response.message,'text/html').body.children) as HTMLElement[];
-            
-            const {button,id} = this.createButton();
-
-            this.selectedTags.forEach((tag,index) => {
-                tag.classList.add('hide');
-                tag.insertAdjacentElement('afterend',newHtmlElements[index])
-
-                if((newHtmlElements.length-1) === index) {
-                    newHtmlElements[index].appendChild(button)
-                }
-            })
-            this.hideElements.push({previus: this.selectedTags as HTMLElement[], id: id, actual:newHtmlElements})
-            this.selectedTags = []
-        }
-        else {
-            console.error("Elemento não achado");
-        }
-
+        this.strategy.insertOnScreen(response.message);
+        
         console.log("Traduziu!")
-    }
-
-    createButton():{id: string, button: HTMLButtonElement} {
-        const idButton = v4()
-        const button = document.createElement('button');
-        button.dataset.id = idButton;
-
-        button.textContent = 'Voltar'
-
-        const showPreviusText = (e:Event) => {
-            const {currentTarget} = e;
-            if(currentTarget instanceof HTMLButtonElement) {
-                const targetPrevius = this.hideElements.find((elem) => elem.id === currentTarget.dataset.id);
-                targetPrevius?.previus.forEach((prev) => {
-                    prev.classList.remove('hide');
-                })
-                targetPrevius?.actual.forEach((active) => {
-                    active.remove();
-                })
-            }
-        }
-
-        button.addEventListener('click', showPreviusText)
-        return {id: idButton, button: button}
     }
 
     htmlToText(tagsList: NodeListOf<ChildNode>) {
@@ -213,3 +132,12 @@ class Translator {
     }
 }
 export {Translator}
+
+
+
+
+
+
+
+
+
