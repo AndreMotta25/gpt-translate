@@ -18,7 +18,8 @@ de alterar a url de request da extensão.
 
 Usamos o endpoint /translate-stream para fazer a tradução. 
 
-### Nota: Por ser tratar do render, as vezes a solicitação de tradução pode demorar ou até falhar, mas isso não é problema do codigo dessa extensão, mas sim uma característica do servidor do render pelo plano gratuito.
+### Nota: Por ser tratar do render, as vezes a solicitação de tradução pode demorar ou até falhar, mas isso não é problema do codigo dessa extensão, mas sim uma característica do servidor do render pelo plano gratuito que torna o servidor inativo depois de um periodo de tempo sem uso.
+
 Recomendo fortemente que upe você mesmo em um servidor mais apropriado.   
 
 # Bibliotecas usadas: 
