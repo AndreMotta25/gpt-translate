@@ -27,3 +27,9 @@ Recomendo fortemente que upe você mesmo em um servidor mais apropriado.
 - @types/chrome
 - typescript
 - vite
+
+# Começando
+- Para começar a usar essa ferramenta, faça um clone desse repositorio. 
+- Com o Vscode aberto de um ```yarn install``` no terminal e em seguida um ```yarn build```.
+- Depois do build uma pasta chamada ```dist``` será criada.
+- Pronto sua extensão está pronta. Basta ir no navegador e carregar a extensão
