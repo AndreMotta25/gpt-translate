@@ -13,7 +13,8 @@ Desenvolvi essa extensão porque acredito que as ferramentas de traduções atua
 
 # O Request
 
-Para fazer a tradução, é feito um request no servidor do render. Caso você tenha o conhecimento necessário, você pode upar o seguinte projeto: "https://github.com/AndreMotta25/translate-gpt-backend" num servidor privado seu. 
+Para fazer a tradução, é feito um request no servidor do render. Caso você tenha o conhecimento necessário, você pode upar o seguinte projeto: "https://github.com/AndreMotta25/translate-gpt-backend" num servidor privado seu. Se fizer isso não se esqueça
+de alterar a url de request da extensão. 
 
 Usamos o endpoint /translate-stream para fazer a tradução. 
 
