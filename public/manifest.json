@@ -4,8 +4,10 @@
     "version": "1.0",
     "description": "Translate web page content with chatGPT",
     "host_permissions":[
-      "https://translate-gpt-backend.vercel.app/*"
+      "https://translate-gpt-backend.vercel.app/*",
+      "https://www.npmjs.com/"
     ],
+    
     "content_scripts": [ 
       { 
         "js": ["assets/script.js"],

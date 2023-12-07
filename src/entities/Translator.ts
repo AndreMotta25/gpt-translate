@@ -1,5 +1,5 @@
 import {Icon} from './Icon.ts'
-import axios from 'axios'
+// import axios from 'axios'
 import { TextSelector } from './Shared/TextSelector.ts';
 import { CommomText } from './CommomText.ts';
 import { GroupTags } from './GroupTags.ts';
@@ -70,16 +70,36 @@ class Translator {
     async translate(text:string) {
         const {organization} = await chrome.storage.local.get(['organization'])
         const {api} = await chrome.storage.local.get(['api'])
+        // const url = "https://translate-gpt-backend.vercel.app/translate/"
+        // const response = await (await axios.post(url,
+        // {   text: `${text}`, 
+        //     apiKey: api,
+        //     organization: organization
+        // },
+        // {timeout: 60000,responseType:'stream'})).data
+        
+        const url = "https://gpt-translate.onrender.com/translate-stream"
+        const response = await fetch(url,
+            {
+                method:"POST",
+                headers:{
+                    "content-type":"application/json"
+                },
+                body:JSON.stringify({text: `${text}`, apiKey: api, organization: organization})  
+            }
+        );
 
-        const response = await (await axios.post("https://translate-gpt-backend.vercel.app/translate/",
-        {   text: `${text}`, 
-            apiKey: api,
-            organization: organization
-        },)).data
-        
-        this.strategy.insertOnScreen(response.message);
-        
-        console.log("Traduziu!")
+        let chunks = "";   
+        await response.body?.pipeThrough(new TextDecoderStream('utf-8')).pipeTo(new WritableStream({
+            write(chunk) {
+                console.log('=>',chunk);
+                chunks += chunk
+            }
+        })).finally(() => {
+            console.log(chunks)
+            this.strategy.insertOnScreen(chunks);
+            console.log("Traduziu!")
+        })           
     }
 
     htmlToText(tagsList: NodeListOf<ChildNode>) {
