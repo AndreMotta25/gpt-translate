@@ -39,4 +39,5 @@ Recomendo fortemente que upe você mesmo em um servidor mais apropriado.
 # Planos para o Futuro
 - Refazer todo o layout da extensão com o react. 
 - Corrigir o bug do icone não aparecer com um duplo click
-- Colocar um x para fechar o painel de credencias. 
+- Colocar um x para fechar o painel de credencias.
+- Tirar a limitação de traduzir só para o português.
