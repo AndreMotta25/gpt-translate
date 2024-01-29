@@ -35,3 +35,8 @@ Recomendo fortemente que upe você mesmo em um servidor mais apropriado.
 - Com o Vscode aberto de um ```yarn install``` no terminal e em seguida um ```yarn build```.
 - Depois do build uma pasta chamada ```dist``` será criada.
 - Pronto sua extensão está pronta. Basta ir no navegador e carregar a extensão
+
+# Planos para o Futuro
+- Refazer todo o layout da extensão com o react. 
+- Corrigir o bug do icone não aparecer com um duplo click
+- Colocar um x para fechar o painel de credencias. 
